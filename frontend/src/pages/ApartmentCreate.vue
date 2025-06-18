@@ -85,4 +85,5 @@ const createApartment = async () => {
     error.value = err.response?.data?.detail || 'Не вдалося створити квартиру'
   }
 }
+
 </script>

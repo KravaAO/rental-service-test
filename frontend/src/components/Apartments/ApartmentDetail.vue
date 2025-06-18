@@ -9,7 +9,6 @@
       {{ apartment.availability ? 'Доступна' : 'Недоступна' }}
     </p>
 
-    <!-- 🔴 Кнопка видалити, якщо користувач є власником -->
     <button
       v-if="isOwner"
       @click="deleteApartment"
@@ -31,7 +30,6 @@ const apartment = ref(null)
 const route = useRoute()
 const router = useRouter()
 
-// ⛔️ не оголошуй вдруге, якщо це вже є вище
 const username = localStorage.getItem('username')
 
 const isOwner = computed(() => apartment.value?.owner === username)

@@ -7,13 +7,13 @@
     <nav class="flex items-center gap-4">
      <template v-if="isAuthenticated">
       <router-link v-if="isAuthenticated" to="/apartments/create" class="bg-green-500 px-3 py-1 rounded hover:bg-green-600">
-        ➕ Додати квартиру
+        Додати квартиру
       </router-link>
       </template>
 
        <div>
           <template v-if="isAuthenticated">
-            <span class="mr-4">👤 {{ username }}</span>
+            <span class="mr-4">{{ username }}</span>
             <button @click="logout" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
               Вийти
             </button>

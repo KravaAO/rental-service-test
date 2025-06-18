@@ -9,6 +9,7 @@ const routes = [
   { path: '/login', component: Login },
   { path: '/apartments/create', name: 'ApartmentCreate', component: ApartmentCreate },
   { path: '/apartments/:slug', name: 'ApartmentPage', component: ApartmentPage },
+
 ]
 
 export default createRouter({ history: createWebHistory(), routes })

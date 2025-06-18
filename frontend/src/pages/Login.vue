@@ -72,4 +72,5 @@ const login = async () => {
       err.response?.data?.detail || 'Невірний email або пароль'
   }
 }
+
 </script>

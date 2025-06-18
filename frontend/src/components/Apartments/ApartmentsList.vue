@@ -2,7 +2,6 @@
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-4">Список квартир</h1>
 
-    <!-- 🔍 Форма фільтрів -->
     <form @submit.prevent="applyFilters" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
       <div>
         <label class="block text-sm font-medium">Ціна від</label>
@@ -62,7 +61,6 @@
       </li>
     </ul>
 
-    <!-- 🔁 Пагінація -->
     <div class="mt-6 flex justify-center items-center gap-4">
       <button
         @click="goToPage(currentPage - 1)"
