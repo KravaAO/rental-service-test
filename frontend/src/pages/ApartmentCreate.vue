@@ -48,7 +48,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import api from '@/api'
+import api from '@/api/index.js'
 
 const name = ref('')
 const description = ref('')
@@ -61,14 +61,25 @@ const router = useRouter()
 
 const createApartment = async () => {
   try {
-    const response = await api.post('/apartments/', {
-      name: name.value,
-      description: description.value,
-      price: price.value,
-      number_of_rooms: number_of_rooms.value,
-      square: square.value,
-      availability: availability.value,
-    })
+    const token = localStorage.getItem('access')
+
+    const response = await api.post(
+      '/apartments/',
+      {
+        name: name.value,
+        description: description.value,
+        price: price.value,
+        number_of_rooms: number_of_rooms.value,
+        square: square.value,
+        availability: availability.value,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
     router.push(`/apartments/${response.data.slug}`)
   } catch (err) {
     error.value = err.response?.data?.detail || 'Не вдалося створити квартиру'
