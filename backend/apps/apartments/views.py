@@ -2,7 +2,9 @@ from rest_framework import viewsets, permissions, filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework.decorators import action
-
+from .filters import ApartmentFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters as drf_filters
 from .models import Apartment
 from .serializers import (
     ApartmentListSerializer,
@@ -19,28 +21,11 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         return obj.owner == request.user
 
 
+
+
 class ApartmentViewSet(viewsets.ModelViewSet):
     queryset = Apartment.objects.all().order_by('-created_at')
+    serializer_class = ApartmentSerializer
     lookup_field = 'slug'
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = {
-        'availability': ['exact'],
-        'number_of_rooms': ['exact'],
-        'price': ['gte', 'lte'],
-    }
-    search_fields = ['name', 'description']
-
-    def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [permissions.IsAuthenticated(), IsOwnerOrReadOnly()]
-        return [permissions.AllowAny()]
-
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return ApartmentListSerializer
-        if self.action == 'retrieve':
-            return ApartmentDetailSerializer
-        return ApartmentCreateUpdateSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    filter_backends = [DjangoFilterBackend, drf_filters.SearchFilter]
+    filterset_class = ApartmentFilter
