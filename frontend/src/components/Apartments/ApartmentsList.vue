@@ -101,10 +101,10 @@ async function fetchApartments(page = 1) {
   try {
     const params = {
       page,
-      ...(filters.value.priceFrom && { price__gte: filters.value.priceFrom }),
-      ...(filters.value.priceTo && { price__lte: filters.value.priceTo }),
-      ...(filters.value.rooms && { number_of_rooms: filters.value.rooms }),
-      ...(filters.value.availability && { availability: true }),
+      ...(filters.value.priceFrom && { price_min: filters.value.priceFrom }),
+      ...(filters.value.priceTo && { price_max: filters.value.priceTo }),
+      ...(filters.value.rooms && { rooms: filters.value.rooms }),
+      ...(filters.value.availability && { available: true }),
       ...(filters.value.search && { search: filters.value.search }),
     }
 
