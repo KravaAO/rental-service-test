@@ -5,18 +5,18 @@
     <form @submit.prevent="applyFilters" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
       <div>
         <label class="block text-sm font-medium">Ціна від</label>
-        <input v-model="filters.priceFrom" type="number" class="w-full p-2 border rounded" />
+        <input v-model="filters.price_min" type="number" class="w-full p-2 border rounded" />
       </div>
       <div>
         <label class="block text-sm font-medium">Ціна до</label>
-        <input v-model="filters.priceTo" type="number" class="w-full p-2 border rounded" />
+        <input v-model="filters.price_max" type="number" class="w-full p-2 border rounded" />
       </div>
       <div>
         <label class="block text-sm font-medium">Кількість кімнат</label>
         <input v-model="filters.rooms" type="number" class="w-full p-2 border rounded" />
       </div>
       <div class="flex items-center gap-2">
-        <input v-model="filters.availability" type="checkbox" id="available" />
+        <input v-model="filters.available" type="checkbox" id="available" />
         <label for="available">Тільки доступні</label>
       </div>
       <div class="md:col-span-2">
@@ -38,12 +38,12 @@
       </div>
     </form>
 
-    <!-- 🏠 Список квартир -->
     <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <li
         v-for="apartment in apartments"
         :key="apartment.slug"
-        class="border p-4 rounded shadow hover:shadow-md transition"
+        class="border p-4 rounded shadow hover:shadow-md transition relative"
+        :class="{ 'opacity-50 blur-sm pointer-events-none': !apartment.availability }"
       >
         <router-link
           :to="`/apartments/${apartment.slug}`"
@@ -61,6 +61,7 @@
       </li>
     </ul>
 
+    <!-- 📄 Пагінація -->
     <div class="mt-6 flex justify-center items-center gap-4">
       <button
         @click="goToPage(currentPage - 1)"
@@ -90,10 +91,10 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 
 const filters = ref({
-  priceFrom: '',
-  priceTo: '',
+  price_min: '',
+  price_max: '',
   rooms: '',
-  availability: false,
+  available: false,
   search: '',
 })
 
@@ -101,10 +102,10 @@ async function fetchApartments(page = 1) {
   try {
     const params = {
       page,
-      ...(filters.value.priceFrom && { price__gte: filters.value.priceFrom }),
-      ...(filters.value.priceTo && { price__lte: filters.value.priceTo }),
-      ...(filters.value.rooms && { number_of_rooms: filters.value.rooms }),
-      ...(filters.value.availability && { availability: true }),
+      ...(filters.value.price_min && { price_min: filters.value.price_min }),
+      ...(filters.value.price_max && { price_max: filters.value.price_max }),
+      ...(filters.value.rooms && { rooms: filters.value.rooms }),
+      ...(filters.value.available && { available: true }),
       ...(filters.value.search && { search: filters.value.search }),
     }
 
