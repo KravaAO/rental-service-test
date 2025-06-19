@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from .models import Apartment
+from .filters import ApartmentFilter
 from .serializers import (
     ApartmentListSerializer,
     ApartmentDetailSerializer,
@@ -23,11 +24,7 @@ class ApartmentViewSet(viewsets.ModelViewSet):
     queryset = Apartment.objects.all().order_by('-created_at')
     lookup_field = 'slug'
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = {
-        'availability': ['exact'],
-        'number_of_rooms': ['exact'],
-        'price': ['gte', 'lte'],
-    }
+    filterset_class = ApartmentFilter
     search_fields = ['name', 'description']
 
     def get_permissions(self):
