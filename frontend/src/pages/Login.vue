@@ -50,7 +50,7 @@ const login = async () => {
 
   try {
     const response = await axios.post(
-      import.meta.env.VITE_API_URL + 'users/api/token/',
+      `${import.meta.env.VITE_API_URL}/users/api/token/`,
       {
         email: email.value,
         password: password.value,
@@ -61,7 +61,6 @@ const login = async () => {
         },
       }
     )
-
     localStorage.setItem('access', response.data.access)
     localStorage.setItem('refresh', response.data.refresh)
     localStorage.setItem('username', email.value)

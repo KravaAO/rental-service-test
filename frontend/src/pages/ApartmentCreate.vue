@@ -57,12 +57,12 @@ const number_of_rooms = ref(null)
 const square = ref(null)
 const availability = ref(true)
 const error = ref('')
+const success = ref('')
 const router = useRouter()
 
 const createApartment = async () => {
   try {
     const token = localStorage.getItem('access')
-
     const response = await api.post(
       '/apartments/',
       {
@@ -79,8 +79,9 @@ const createApartment = async () => {
         },
       }
     )
-
-    router.push(`/apartments/${response.data.slug}`)
+  
+    router.push('/')
+   
   } catch (err) {
     error.value = err.response?.data?.detail || 'Не вдалося створити квартиру'
   }

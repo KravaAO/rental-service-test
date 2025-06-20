@@ -3,18 +3,6 @@
     <h1 class="text-2xl font-bold mb-4">Список квартир</h1>
 
     <form @submit.prevent="applyFilters" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-      <div>
-        <label class="block text-sm font-medium">Ціна від</label>
-        <input v-model="filters.price_min" type="number" class="w-full p-2 border rounded" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Ціна до</label>
-        <input v-model="filters.price_max" type="number" class="w-full p-2 border rounded" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Кількість кімнат</label>
-        <input v-model="filters.rooms" type="number" class="w-full p-2 border rounded" />
-      </div>
       <div class="flex items-center gap-2">
         <input v-model="filters.available" type="checkbox" id="available" />
         <label for="available">Тільки доступні</label>
@@ -27,6 +15,18 @@
           placeholder="назва або опис..."
           class="w-full p-2 border rounded"
         />
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium">Сортування</label>
+        <select v-model="filters.ordering" @change="applyFilters" class="w-full p-2 border rounded">
+          <option value="">За замовчуванням</option>
+          <option value="price">Ціна ↑</option>
+          <option value="-price">Ціна ↓</option>
+          <option value="number_of_rooms">Кімнат ↑</option>
+          <option value="-number_of_rooms">Кімнат ↓</option>
+          <option value="created_at">Додано ↑</option>
+          <option value="-created_at">Додано ↓</option>
+        </select>
       </div>
       <div class="md:col-span-2 flex justify-end">
         <button
@@ -61,7 +61,6 @@
       </li>
     </ul>
 
-    <!-- 📄 Пагінація -->
     <div class="mt-6 flex justify-center items-center gap-4">
       <button
         @click="goToPage(currentPage - 1)"
@@ -91,42 +90,47 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 
 const filters = ref({
-  price_min: '',
-  price_max: '',
-  rooms: '',
   available: false,
   search: '',
+  ordering: '', 
 })
 
+console.log('filters on init:', filters.value)
+
 async function fetchApartments(page = 1) {
+  console.log('fetchApartments called, page:', page)
   try {
     const params = {
       page,
-      ...(filters.value.price_min && { price_min: filters.value.price_min }),
-      ...(filters.value.price_max && { price_max: filters.value.price_max }),
-      ...(filters.value.rooms && { rooms: filters.value.rooms }),
-      ...(filters.value.available && { available: true }),
+      ...(filters.value.available && { availability: true }),
       ...(filters.value.search && { search: filters.value.search }),
+      ...(filters.value.ordering && { ordering: filters.value.ordering }),
     }
-
-    const response = await api.get('apartments/', { params })
+   
+    const response = await api.get('/apartments/', { params })
+  
     apartments.value = response.data.results
     currentPage.value = page
     totalPages.value = Math.ceil(response.data.count / 10)
   } catch (err) {
-    console.error('❌ Помилка завантаження:', err)
+    console.error('Помилка завантаження:', err)
   }
 }
 
 function applyFilters() {
+  console.log('applyFilters called, filters:', JSON.parse(JSON.stringify(filters.value)))
   fetchApartments(1)
 }
 
 function goToPage(page) {
+  console.log('goToPage called, page:', page)
   if (page >= 1 && page <= totalPages.value) {
     fetchApartments(page)
   }
 }
 
-onMounted(() => fetchApartments())
+onMounted(() => {
+  console.log('onMounted ApartmentsList.vue')
+  fetchApartments()
+})
 </script>

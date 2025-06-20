@@ -18,8 +18,7 @@ services:
       context: ./frontend
       target: dev
     env_file: ./frontend/.env
-    volumes:
-      - ./frontend:/app
+   
     ports:
       - "5000:5000"
     depends_on:
