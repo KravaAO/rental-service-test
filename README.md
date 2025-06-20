@@ -1,119 +1,99 @@
-# Apartment Rental Service
+# Rental Service API
 
-## Технологічний стек
+## Apartments
 
-### Backend
+Base URL: `/api/v1/apartments/`
 
-- **Python 3.10+** з type hints
-- **Django 4.2** + **Django Rest Framework (DRF)**
-- **PostgreSQL** для бази даних
-- **JWT** для автентифікації користувачів
-- **DRF Spectacular** для автоматичної документації API
-- **Docker** + **Docker Compose** для контейнеризації
+- **GET /api/v1/apartments/** — список квартир (фільтри: search, ordering, availability)
+- **POST /api/v1/apartments/** — створити нову квартиру (авторизація)
+- **GET /api/v1/apartments/{slug}/** — деталі квартири
+- **PUT/PATCH /api/v1/apartments/{slug}/** — редагування квартири (тільки власник)
+- **DELETE /api/v1/apartments/{slug}/** — видалення квартири (тільки власник)
 
-### Frontend
-
-- **Vue.js 3** (Composition API)
-- **Vue Router** для навігації
-- **Tailwind CSS 3**
-- **Axios** для HTTP запитів
-- **Vite** для збірки проекту
+Фільтри:
+- `available=true` — тільки доступні
+- `search` — пошук по назві/опису
+- `ordering` — сортування: price_max, price_min, rooms, -rooms, created_at, -created_at
 
 ---
 
-## Вимоги до завдання
+## Users & Auth
 
-### Part 1: Backend завдання
+Base URL: `/api/v1/users/`
 
-#### 1. Створення моделі **Apartment**
+- **GET /api/v1/users/users/** — список користувачів (тільки для адміністратора)
+- **GET /api/v1/users/users/{id}/** — деталі користувача (тільки для адміністратора)
 
-Необхідно створити модель **Apartment** з наступними полями:
+JWT авторизація:
+- **POST /api/v1/users/api/token/** — отримати токен (login)
+  - body: `{ "email": "user@example.com", "password": "..." }`
+- **POST /api/v1/users/api/token/refresh/** — оновити токен
+  - body: `{ "refresh": "..." }`
 
-- `name` — максимальна довжина 100 символів
-- `slug` — унікальний ідентифікатор
-- `description` — опис квартири
-- `price` — ціна, тип decimal, максимальна кількість цифр 8, з двома десятковими знаками
-- `number_of_rooms` — кількість кімнат
-- `square` — площа в квадратних метрах, тип decimal
-- `availability` — доступність (boolean)
-- `owner` — зовнішній ключ до моделі користувача
-- `created_at`, `updated_at` — дати створення та останнього оновлення
 
-Додати модель до Django Admin панелі з можливістю фільтрації та пошуку по ключових полях.
+### Приклад запиту на отримання квартир
+```
+GET /api/v1/apartments/?availability=true&ordering=-price&search=центр
+```
 
-#### 2. Реалізація API Endpoints
-
-- **GET /api/v1/apartments/**  
-  Список всіх квартир з фільтрами:
-  - `price_min`
-  - `price_max`
-  - `rooms`
-  - `available`
-  - `search` (за назвою або описом)
-  - Пагінація (10 елементів на сторінку)
-  - Доступ для всіх користувачів (allow any)
-- **GET /api/v1/apartments/{slug}/**  
-  Деталі квартири за `slug`.
-
-- **POST /api/v1/apartments/**  
-  Створення нової квартири (доступно тільки для авторизованих користувачів).
-
-- **PUT/DELETE /api/v1/apartments/{slug}/**  
-  Редагування/видалення квартири (доступно тільки для власника квартири).
-
-Додати документацію для цих endpoints за допомогою **drf-spectacular** (`/api/v1/docs/`).
-
-#### 3. ✨ Додатково
-
-- Створити скрипт для автоматичного додавання кількох користувачів та квартир (з використанням **Factory Boy** та Django команд).
-
-### Part 2: Frontend завдання
-
-#### 1. Створення сторінок
-
-- **Сторінка зі списком квартир**:
-  - Пагінація та фільтри:
-    - Ціна, кількість кімнат, доступність, пошук за назвою або описом.
-  - Кожен елемент списку має бути посиланням на деталі квартири.
-- **Сторінка детальної інформації про квартиру**:
-  - Відображення всіх полів моделі **Apartment**.
-
-#### 2. Дизайн
-
-- Використовувати **Vue.js** (за бажанням - React) та **TailwindCSS** для побудови інтерфейсу.
-- Дизайн має бути адаптивним, працювати як на десктопах, так і на мобільних пристроях.
-- Якщо квартира недоступна, візуально відображати це через зміни в стилях (наприклад, зниження непрозорості або застосування ефекту blur).
-
-#### 3. Запити до Backend
-
-- Для запитів до Backend використовувати **Axios**, при цьому базовий URL буде зберігатися в змінній середовища **VITE_API_URL**.
-
-#### 4. ✨ Додатково
-
-- Реалізувати сторінку **Login**:
-
-  - Валідація форми.
-  - Запит на авторизацію в Backend.
-  - Зберігання отриманого токену.
-
-- Всі сторінки повинні бути інтегровані з Backend, реалізувати сторінку для логіну з відповідною обробкою токенів.
-
----
-
-## Запуск проекту
-
-Щоб запустити проект, скористайтеся наступними командами:
-
-```bash
-docker compose build
-docker compose up
+### Приклад логіну
+```
+POST /api/v1/users/api/token/
+{
+  "email": "user@example.com",
+  "password": "yourpassword"
+}
 ```
 
 ---
 
-## Послідовність дій
+> Для повного переліку полів дивіться Swagger-документацію `/api/v1/docs/`.
+## Factory Boy (seed-скрипти)
 
-1. Клонуйте цей репозиторій на свій локальний комп'ютер.
-2. Запустіть проект за допомогою docker compose. Проект уже налаштований для роботи в середовищі розробки (dev).
-3. Виконайте завдання, зазначені в частинах Part 1 та Part 2.
-4. Завантажте код до власного репозиторію на GitHub у режимі private і додайте користувача mvk-mash у список колабораторів (Collaborators).
+- **Створити тестові дані (користувачі та квартири):**
+
+    ```sh
+    docker compose exec backend python manage.py seed_apartments --users 30 --apartments 20
+    ```
+
+- **Додати лише квартири:**
+
+    ```sh
+    docker compose exec backend python manage.py seed_apartments --apartments 20
+    ```
+
+- **Додати лише користувачів:**
+
+    ```sh
+    docker compose exec backend python manage.py seed_apartments --users 30
+    ```
+
+---
+
+## Docker-команди для запуску
+
+- **Запустити всі сервіси:**
+
+    ```sh
+    docker compose up --build
+    ```
+
+- **Зупинити всі сервіси:**
+
+    ```sh
+    docker compose down
+    ```
+
+- **Перезапустити з перебілдом:**
+
+    ```sh
+    docker compose down -v
+    docker compose build --no-cache
+    docker compose up
+    ```
+
+- **Переглянути логи:**
+
+    ```sh
+    docker compose logs -f
+    ```

@@ -9,7 +9,7 @@ const routes = [
   { path: '/login', component: Login },
   { path: '/apartments/create', name: 'ApartmentCreate', component: ApartmentCreate },
   { path: '/apartments/:slug', name: 'ApartmentPage', component: ApartmentPage },
-
+  { path: '/apartments/:slug/edit', name: 'ApartmentEdit', component: () => import('../pages/ApartmentEdit.vue') },
 ]
 
 export default createRouter({ history: createWebHistory(), routes })
